@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>AvramenKo estate — картка об'єкта</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --navy:#16233D; --navy-2:#1E3050; --gold:#C79A3C; --gold-dim:#8A6B27;
+    --bg:#0F1725; --card:#182437; --line:#25344C; --text:#E8EDF5;
+    --muted:#8B9AB2; --err:#E2574C; --ok:#3FA870;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:96px}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);
+    padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--gold);color:#14203A;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex:none}
+  .brand b{font-size:15px;font-weight:600;letter-spacing:.2px}
+  .brand span{display:block;font-size:11.5px;color:#9FB0C9;font-weight:400;margin-top:1px}
+  .bar{margin-top:11px;height:4px;background:#0D1626;border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:99px;transition:width .25s}
+  .barlbl{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;color:#9FB0C9}
+  .seg{display:flex;gap:7px;padding:14px 16px 0}
+  .seg button{flex:1;padding:11px 8px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);font-size:13.5px;font-weight:500}
+  .seg button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#14203A;font-weight:600}
+  section{margin:16px 16px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .sechead{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .sechead h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.9px;text-transform:uppercase;color:var(--gold)}
+  .body{padding:6px 14px 14px}
+  .f{margin-top:12px}
+  .f label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+  .f label i{color:var(--err);font-style:normal;margin-left:2px}
+  input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);
+    background:#101A2A;color:var(--text);font-size:15px;font-family:inherit;appearance:none}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+  textarea{min-height:76px;resize:vertical}
+  select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='7' fill='none'><path d='M1 1l4.5 4.5L10 1' stroke='%238B9AB2' stroke-width='1.6' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+  .row{display:flex;gap:10px}.row .f{flex:1}
+  .miss{border-color:var(--err)!important}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .price-wrap{position:relative}
+  .price-wrap input{padding-right:74px;font-size:17px;font-weight:600}
+  .price-wrap span{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+    color:var(--gold);font-size:13px;font-weight:600;pointer-events:none}
+  footer{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,rgba(15,23,37,0) 0%,var(--bg) 22%)}
+  .go{width:100%;padding:16px;border:none;border-radius:13px;background:var(--gold);color:#14203A;
+    font-size:16px;font-weight:700;font-family:inherit}
+  .go:disabled{background:#2B3A52;color:#6B7C96}
+  .warn{display:none;margin:0 0 9px;padding:10px 12px;border-radius:10px;
+    background:rgba(226,87,76,.12);border:1px solid rgba(226,87,76,.35);
+    color:#F0A29B;font-size:12.5px}
+  .warn.on{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="mark">A</div>
+    <div><b>AvramenKo estate</b><span>Картка об'єкта</span></div>
+  </div>
+  <div class="bar"><i id="pbar"></i></div>
+  <div class="barlbl"><span id="pcount">0 з 0 обов'язкових</span><span id="ppct">0%</span></div>
+</header>
+
+<div class="seg" role="group" aria-label="Тип нерухомості">
+  <button type="button" data-type="new" aria-pressed="false">Новобудова</button>
+  <button type="button" data-type="second" aria-pressed="true">Вторинний ринок</button>
+</div>
+
+<form id="form">
+
+<section>
+  <div class="sechead"><h2>Об'єкт</h2></div>
+  <div class="body">
+    <div class="row">
+      <div class="f"><label>Код об'єкта <i>*</i></label>
+        <input name="code" required placeholder="SF-2-927-458"></div>
+      <div class="f"><label>Кімнат <i>*</i></label>
+        <select name="rooms" required>
+          <option value="">—</option><option>1</option><option>2</option>
+          <option>3</option><option>4</option><option>5+</option></select></div>
+    </div>
+    <div class="f"><label>ЖК, адреса <i>*</i></label>
+      <input name="address" required placeholder="ЖК Миру-4, вул. Миру, 4Б"></div>
+    <div class="f"><label>Інфраструктура району <i>*</i></label>
+      <textarea name="infra" required placeholder="С/м «Восторг», магазини, ринок, зупинка поруч"></textarea></div>
+    <div class="f"><label>Опис двору</label>
+      <textarea name="yard" placeholder="Закритий двір, дитячий майданчик, гостьова парковка"></textarea></div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Будинок</h2></div>
+  <div class="body">
+    <div class="f"><label>Тип будинку <i>*</i></label>
+      <select name="houseType" required><option value="">—</option>
+        <option>новобудова</option><option>висотка цегляна</option><option>висотка панельна</option>
+        <option>чешка</option><option>полька</option><option>сталінка</option><option>хрущовка</option></select></div>
+
+    <div data-only="new">
+      <div class="f"><label>Готовність будинку <i>*</i></label>
+        <select name="readiness"><option value="">—</option>
+          <option>на стадії будівництва</option><option>зданий в експлуатацію</option></select></div>
+      <div class="f"><label>Забудовник <i>*</i></label>
+        <select name="developer"><option value="">—</option>
+          <option>Житлобуд-1</option><option>Житлобуд-2</option><option>Житлобуд-3</option>
+          <option>Констракшен груп</option><option>МЖКДУ</option><option>Набережний квартал</option></select></div>
+      <div class="row">
+        <div class="f"><label>Рік вводу</label><input name="yearBuilt" inputmode="numeric" maxlength="4" placeholder="2020"></div>
+        <div class="f"><label>Планована здача</label><input name="yearPlan" inputmode="numeric" maxlength="4" placeholder="2027"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="f"><label>Поверх <i>*</i></label><input name="floor" required inputmode="numeric" maxlength="3" placeholder="8"></div>
+      <div class="f"><label>Поверхів <i>*</i></label><input name="floors" required inputmode="numeric" maxlength="3" placeholder="9"></div>
+    </div>
+    <div class="f"><label>Технологія будівництва <i>*</i></label>
+      <select name="tech" required><option value="">—</option>
+        <option>цегла</option><option>панель</option><option>монолітно-каркасний</option></select></div>
+    <div class="row">
+      <div class="f"><label>Перекриття</label>
+        <select name="slabs"><option value="">—</option>
+          <option>залізобетонні</option><option>комбіновані</option><option>дерев'яні</option></select></div>
+      <div class="f"><label>Висота стелі</label><input name="ceiling" placeholder="3 м"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Планування</h2></div>
+  <div class="body">
+    <div class="row">
+      <div class="f"><label>Загальна площа, м² <i>*</i></label><input name="area" required inputmode="decimal" placeholder="50,8"></div>
+      <div class="f"><label>Кухня, м²</label><input name="kitchen" inputmode="decimal" placeholder="8,5"></div>
+    </div>
+    <div class="f"><label>Кімнати (метражі) <i>*</i></label>
+      <input name="roomsArea" required placeholder="2 окремі: 17,4 та 10,3"></div>
+    <div class="row">
+      <div class="f"><label>Балкон / лоджія</label><input name="balcony" placeholder="Лоджія 3,8"></div>
+      <div class="f"><label>Коридор, м²</label><input name="hall" inputmode="decimal" placeholder="7,6"></div>
+    </div>
+    <div class="f"><label>Санвузли</label>
+      <select name="bath"><option value="">—</option>
+        <option>роздільний</option><option>сумісний</option>
+        <option>два сумісних</option><option>два роздільних</option></select></div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Стан і комунікації</h2></div>
+  <div class="body">
+    <div class="f"><label>Ремонт <i>*</i></label>
+      <textarea name="repair" required placeholder="Якісний, усе робилось для себе"></textarea></div>
+    <div class="f"><label>Меблі / техніка</label>
+      <input name="furniture" placeholder="Продається з меблями та технікою"></div>
+    <div class="f"><label>Опалення <i>*</i></label>
+      <select name="heating" required><option value="">—</option>
+        <option>центральне</option><option>індивідуальний газовий котел</option>
+        <option>індивідуальний електричний котел</option><option>газова котельня в будинку</option>
+        <option>електрична котельня в будинку</option></select></div>
+    <div class="f"><label>Лічильники</label>
+      <input name="meters" placeholder="Опалення, вода, електропостачання, газ"></div>
+  </div>
+</section>
+
+<section>
+  <div class="sechead"><h2>Умови продажу</h2></div>
+  <div class="body">
+    <div class="f"><label>Вартість <i>*</i></label>
+      <div class="price-wrap">
+        <input name="price" required inputmode="numeric" maxlength="4" placeholder="60">
+        <span>тис. $</span>
+      </div>
+      <div class="hint">Тільки число в тисячах доларів. 60 = 60 тис. $</div>
+    </div>
+    <div class="f"><label>Продаж за програмами</label>
+      <input name="programs" placeholder="Можливий продаж по сертифікату, єОселя"></div>
+    <div class="f"><label>Унікальні деталі об'єкта</label>
+      <textarea name="unique" placeholder="Додатково продається гараж у дворі. Ніколи не здавалась в оренду."></textarea>
+      <div class="hint">Те, що не стандартизується — саме це робить опис живим</div>
+    </div>
+  </div>
+</section>
+
+</form>
+
+<footer>
+  <div class="warn" id="warn"></div>
+  <button class="go" id="go" type="button" disabled>Заповніть обов'язкові поля</button>
+</footer>
+
+<script>
+(function(){
+  // ⚠️ ЗАМІНИТИ на Production URL вашого Webhook-вузла в n8n
+  var WEBHOOK_URL = 'https://nikita123456.app.n8n.cloud/webhook/avramenko-card';
+
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if(tg){ tg.ready(); tg.expand(); }
+
+  var form  = document.getElementById('form'),
+      go    = document.getElementById('go'),
+      warn  = document.getElementById('warn'),
+      pbar  = document.getElementById('pbar'),
+      pcnt  = document.getElementById('pcount'),
+      ppct  = document.getElementById('ppct'),
+      type  = 'second';
+
+  // перемикач типу
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.onclick = function(){
+      document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      type = b.dataset.type;
+      applyType();
+      check();
+    };
+  });
+
+  function applyType(){
+    document.querySelectorAll('[data-only]').forEach(function(box){
+      var show = box.dataset.only === type;
+      box.style.display = show ? '' : 'none';
+      box.querySelectorAll('select,input').forEach(function(el){
+        if(el.name === 'readiness' || el.name === 'developer'){
+          if(show) el.setAttribute('required','required'); else el.removeAttribute('required');
+        }
+        if(!show) el.value = '';
+      });
+    });
+  }
+
+  // ціна — тільки цифри
+  var price = form.querySelector('[name=price]');
+  price.addEventListener('input', function(){
+    price.value = price.value.replace(/[^\d]/g,'').slice(0,4);
+    check();
+  });
+  form.querySelectorAll('[inputmode=numeric]').forEach(function(el){
+    if(el.name === 'price') return;
+    el.addEventListener('input', function(){ el.value = el.value.replace(/[^\d]/g,''); });
+  });
+
+  function req(){ return Array.prototype.slice.call(form.querySelectorAll('[required]'))
+    .filter(function(el){ return el.offsetParent !== null; }); }
+
+  function check(){
+    var all = req(), filled = all.filter(function(el){ return el.value.trim() !== ''; });
+    var pct = all.length ? Math.round(filled.length / all.length * 100) : 0;
+    pbar.style.width = pct + '%';
+    pcnt.textContent = filled.length + ' з ' + all.length + " обов'язкових";
+    ppct.textContent = pct + '%';
+    var ready = filled.length === all.length;
+    go.disabled = !ready;
+    go.textContent = ready ? 'Згенерувати опис' : 'Заповніть обов\u2019язкові поля';
+    if(ready){ warn.classList.remove('on'); form.querySelectorAll('.miss').forEach(function(el){ el.classList.remove('miss'); }); }
+    return ready;
+  }
+  form.addEventListener('input', check);
+  form.addEventListener('change', check);
+
+  go.onclick = function(){
+    var all = req(), empty = all.filter(function(el){ return el.value.trim() === ''; });
+    if(empty.length){
+      empty.forEach(function(el){ el.classList.add('miss'); });
+      warn.textContent = 'Не заповнено полів: ' + empty.length + '. Опис не буде згенеровано, поки всі обов\u2019язкові поля порожні.';
+      warn.classList.add('on');
+      empty[0].scrollIntoView({behavior:'smooth', block:'center'});
+      if(tg) tg.HapticFeedback.notificationOccurred('error');
+      return;
+    }
+    var data = { type: type === 'new' ? 'Новобудова' : 'Вторинний ринок' };
+    new FormData(form).forEach(function(v,k){ v = String(v).trim(); if(v) data[k] = v; });
+    data.price = Number(data.price);
+
+    // chat_id користувача з Telegram
+    var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+    data.chatId = u ? u.id : null;
+    data.firstName = u ? (u.first_name || '') : '';
+
+    if(!data.chatId){
+      warn.textContent = 'Не вдалося визначити користувача. Відкрийте форму через кнопку в боті.';
+      warn.classList.add('on');
+      return;
+    }
+
+    go.disabled = true; go.textContent = 'Генерую опис…';
+    if(tg) tg.HapticFeedback.impactOccurred('medium');
+
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    })
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      go.textContent = 'Готово! Опис у чаті';
+      if(tg){ tg.HapticFeedback.notificationOccurred('success'); setTimeout(function(){ tg.close(); }, 1200); }
+    })
+    .catch(function(e){
+      warn.textContent = 'Помилка відправки: ' + e.message + '. Спробуйте ще раз.';
+      warn.classList.add('on');
+      go.disabled = false; go.textContent = 'Згенерувати опис';
+      if(tg) tg.HapticFeedback.notificationOccurred('error');
+    });
+  };
+
+  applyType(); check();
+})();
+</script>
+</body>
+</html>
