@@ -87,10 +87,10 @@
           <option value="">—</option><option>1</option><option>2</option>
           <option>3</option><option>4</option><option>5+</option></select></div>
     </div>
-    <div class="f"><label>ЖК, адреса <i>*</i></label>
-      <input name="address" required placeholder="ЖК Миру-4, вул. Миру, 4Б"></div>
+    <div class="f"><label>Населений пункт та адреса <i>*</i></label>
+      <input name="city" required placeholder="Населений пункт, область"><input name="address" required placeholder="ЖК Миру-4, вул. Миру, 4Б"></div>
     <div class="f"><label>Інфраструктура району <i>*</i></label>
-      <textarea name="infra" required placeholder="С/м «Восторг», магазини, ринок, зупинка поруч"></textarea></div>
+      <textarea name="infra" placeholder="С/м «Восторг», магазини, ринок, зупинка поруч"></textarea></div>
     <div class="f"><label>Опис двору</label>
       <textarea name="yard" placeholder="Закритий двір, дитячий майданчик, гостьова парковка"></textarea></div>
   </div>
@@ -99,7 +99,7 @@
   <div class="sechead"><h2>Будинок</h2></div>
   <div class="body">
     <div class="f"><label>Тип будинку <i>*</i></label>
-      <select name="houseType" required><option value="">—</option>
+      <select name="houseType"><option value="">—</option>
         <option>новобудова</option><option>висотка цегляна</option><option>висотка панельна</option>
         <option>чешка</option><option>полька</option><option>сталінка</option><option>хрущовка</option></select></div>
     <div data-only="new">
@@ -116,11 +116,11 @@
       </div>
     </div>
     <div class="row">
-      <div class="f"><label>Поверх <i>*</i></label><input name="floor" required inputmode="numeric" maxlength="3" placeholder="8"></div>
-      <div class="f"><label>Поверхів <i>*</i></label><input name="floors" required inputmode="numeric" maxlength="3" placeholder="9"></div>
+      <div class="f"><label>Поверх <i>*</i></label><input name="floor" inputmode="numeric" maxlength="3" placeholder="8"></div>
+      <div class="f"><label>Поверхів <i>*</i></label><input name="floors" inputmode="numeric" maxlength="3" placeholder="9"></div>
     </div>
     <div class="f"><label>Технологія будівництва <i>*</i></label>
-      <select name="tech" required><option value="">—</option>
+      <select name="tech"><option value="">—</option>
         <option>цегла</option><option>панель</option><option>монолітно-каркасний</option></select></div>
     <div class="row">
       <div class="f"><label>Перекриття</label>
@@ -138,7 +138,7 @@
       <div class="f"><label>Кухня, м²</label><input name="kitchen" inputmode="decimal" placeholder="8,5"></div>
     </div>
     <div class="f"><label>Кімнати (метражі) <i>*</i></label>
-      <input name="roomsArea" required placeholder="2 окремі: 17,4 та 10,3"></div>
+      <input name="roomsArea" placeholder="2 окремі: 17,4 та 10,3"></div>
     <div class="row">
       <div class="f"><label>Балкон / лоджія</label><input name="balcony" placeholder="Лоджія 3,8"></div>
       <div class="f"><label>Коридор, м²</label><input name="hall" inputmode="decimal" placeholder="7,6"></div>
@@ -153,11 +153,11 @@
   <div class="sechead"><h2>Стан і комунікації</h2></div>
   <div class="body">
     <div class="f"><label>Ремонт <i>*</i></label>
-      <textarea name="repair" required placeholder="Якісний, усе робилось для себе"></textarea></div>
+      <textarea name="repair" placeholder="Якісний, усе робилось для себе"></textarea></div>
     <div class="f"><label>Меблі / техніка</label>
       <input name="furniture" placeholder="Продається з меблями та технікою"></div>
     <div class="f"><label>Опалення <i>*</i></label>
-      <select name="heating" required><option value="">—</option>
+      <select name="heating"><option value="">—</option>
         <option>центральне</option><option>індивідуальний газовий котел</option>
         <option>індивідуальний електричний котел</option><option>газова котельня в будинку</option>
         <option>електрична котельня в будинку</option></select></div>
@@ -259,11 +259,11 @@
       <div class="hint">Число в тисячах доларів. Можна з комою: 29,5 = 29,5 тис. $</div>
     </div>
     <div class="f"><label>Комісія АН <i>*</i></label>
-      <select name="commission" required><option value="">—</option>
+      <select name="commission"><option value="">—</option>
         <option>+ послуги АН</option><option>без комісії (включена у вартість)</option></select>
     </div>
     <div class="f"><label>Співпраця з колегами <i>*</i></label>
-      <select name="cooperation" required><option value="">—</option>
+      <select name="cooperation"><option value="">—</option>
         <option>так</option><option>ні</option></select>
     </div>
     <div class="f"><label>Продаж за програмами</label>
@@ -307,7 +307,7 @@
       box.style.display = show ? '' : 'none';
       box.querySelectorAll('select,input').forEach(function(el){
         if(el.name === 'readiness' || el.name === 'developer'){
-          if(show) el.setAttribute('required','required'); else el.removeAttribute('required');
+          el.removeAttribute('required');
         }
         if(!show) el.value = '';
       });
@@ -324,7 +324,7 @@
     document.querySelectorAll('section[data-house]').forEach(function(sec){
       sec.style.display = isHouse ? '' : 'none';
       sec.querySelectorAll('input,select,textarea').forEach(function(el){
-        var mustReq = ['landArea','houseArea','houseRepair'].indexOf(el.name) !== -1;
+        var mustReq = ['houseArea'].indexOf(el.name) !== -1;
         if(isHouse){
           if(mustReq) el.setAttribute('required','required');
         } else {
@@ -349,6 +349,8 @@
   function req(){ return Array.prototype.slice.call(form.querySelectorAll('[required]'))
     .filter(function(el){ return el.offsetParent !== null; }); }
   function check(){
+    form.querySelectorAll('label i').forEach(function(star){star.remove();});
+    form.querySelectorAll('[required]').forEach(function(field){var label=field.closest('.f')?.querySelector('label');if(label&&!label.querySelector('i')){var star=document.createElement('i');star.textContent='*';label.appendChild(star);}});
     var all = req(), filled = all.filter(function(el){ return el.value.trim() !== ''; });
     var pct = all.length ? Math.round(filled.length / all.length * 100) : 0;
     pbar.style.width = pct + '%';
@@ -362,7 +364,37 @@
   }
   form.addEventListener('input', check);
   form.addEventListener('change', check);
+  function v18PollResult(ticket,fetcher,wait,now,start){
+ start=start??now();
+ if(now()-start>600000)return Promise.reject(Error('Запит ще обробляється. Натисніть кнопку повторно, щоб отримати його результат.'));
+ return fetcher('https://avramenko-estate.online/webhook/avramenko-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(ticket)})
+ .then(r=>{if(!r.ok)throw Error('Мережа тимчасово недоступна');return r.json();})
+ .then(result=>{
+  if(result.status==='done'&&result.ok&&result.text)return result;
+  if(['failed','cancelled','not_found','duplicate'].includes(result.status))throw Object.assign(Error(result.error||'Не вдалося створити опис. Перевірте поля та повторіть.'),{terminal:true});
+  return wait(2000).then(()=>v18PollResult(ticket,fetcher,wait,now,start));
+ },error=>wait(2000).then(()=>v18PollResult(ticket,fetcher,wait,now,start)));
+}
+  var savedTicket=null;
+  try{savedTicket=JSON.parse(sessionStorage.getItem('avramenkoV18Job')||'null');}catch(e){}
+  function remember(ticket){savedTicket=ticket;try{if(ticket)sessionStorage.setItem('avramenkoV18Job',JSON.stringify(ticket));else sessionStorage.removeItem('avramenkoV18Job');}catch(e){}}
+  function finishJob(res){
+    remember(null);showResult(res.text);
+    var notes=document.getElementById('agentNotices');
+    notes.textContent=(res.agentNotices||[]).join('\n');notes.hidden=!notes.textContent;
+    go.disabled=false;go.textContent='Згенерувати опис';
+    if(tg)tg.HapticFeedback.notificationOccurred('success');
+  }
+  function failJob(e){
+    if(e.terminal)remember(null);hideLoading();
+    warn.textContent=e.message;warn.classList.add('on');go.disabled=false;
+    go.textContent=savedTicket?'Отримати результат':'Згенерувати опис';
+    if(tg)tg.HapticFeedback.notificationOccurred('error');
+  }
+  function pollJob(ticket){return v18PollResult(ticket,fetch.bind(window),ms=>new Promise(resolve=>setTimeout(resolve,ms)),Date.now).then(finishJob).catch(failJob);}
+  window.addEventListener('load',function(){if(savedTicket){showLoading();pollJob(savedTicket);}});
   go.onclick = function(){
+    if(savedTicket){go.disabled=true;showLoading();pollJob(savedTicket);return;}
     var all = req(), empty = all.filter(function(el){ return el.value.trim() === ''; });
     if(empty.length){
       empty.forEach(function(el){ el.classList.add('miss'); });
@@ -386,28 +418,15 @@
     go.disabled = true; go.textContent = 'Генерую опис…';
     if(tg) tg.HapticFeedback.impactOccurred('medium');
     showLoading();
-    fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    })
-    .then(function(r){
-      if(!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+    fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(function(r){if(!r.ok)throw Error('Не вдалося надіслати запит. Перевірте з’єднання.');return r.json();})
     .then(function(res){
-      var txt = (res && res.text) ? res.text : '';
-      if(!txt) throw new Error('порожня відповідь');
-      showResult(txt);
-      if(tg) tg.HapticFeedback.notificationOccurred('success');
-    })
-    .catch(function(e){
-      hideLoading();
-      warn.textContent = 'Помилка: ' + e.message + '. Спробуйте ще раз.';
-      warn.classList.add('on');
-      go.disabled = false; go.textContent = 'Згенерувати опис';
-      if(tg) tg.HapticFeedback.notificationOccurred('error');
-    });
+      if(res.status==='queued'&&Number.isInteger(res.id)&&/^[a-f0-9]{48}$/.test(res.token||'')){
+        remember({id:res.id,token:res.token});return pollJob(savedTicket);
+      }
+      if(res.ok&&res.text){finishJob(res);return;}
+      throw Error(res.error||'Не вдалося прийняти запит. Перевірте поля та повторіть.');
+    }).catch(failJob);
   };
   applyType(); check();
 })();
@@ -416,7 +435,7 @@
   flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;">
   <div class="spinner"></div>
   <div style="color:var(--text);font-size:16px;font-weight:600;">Генерую опис…</div>
-  <div style="color:var(--muted);font-size:13px;">Це займає до 15 секунд</div>
+  <div style="color:var(--muted);font-size:13px;">Запит у черзі. Результат з’явиться тут автоматично.</div>
 </div>
 <div id="resultOverlay" style="display:none;position:fixed;inset:0;z-index:200;background:var(--bg);
   flex-direction:column;padding:16px;">
@@ -428,6 +447,7 @@
   <div id="resultText" style="flex:1;overflow-y:auto;background:var(--card);border:1px solid var(--line);
     border-radius:12px;padding:14px;color:var(--text);font-size:14px;line-height:1.55;white-space:pre-wrap;
     -webkit-user-select:text;user-select:text;margin-bottom:12px;"></div>
+  <div id="agentNotices" hidden style="flex:none;white-space:pre-wrap;margin:8px 0;color:var(--muted);font-size:13px;"></div>
   <div style="flex:none;display:flex;flex-direction:column;gap:8px;">
     <button id="copyBtn" style="width:100%;padding:15px;border:none;border-radius:12px;background:var(--gold);
       color:#14203A;font-size:16px;font-weight:700;font-family:inherit;">Скопіювати опис</button>
@@ -470,7 +490,7 @@
   };
   document.getElementById('againBtn').onclick = function(){
     ro.style.display='none';
-    if(tg) tg.close(); else location.reload();
+    location.reload();
   };
 })();
 </script>
